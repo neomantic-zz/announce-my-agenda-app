@@ -33,7 +33,6 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		Calendars.OWNER_ACCOUNT
 	};
 	private TextToSpeech mTTS;
-	private int MY_DATA_CHECK_CODE = 0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
