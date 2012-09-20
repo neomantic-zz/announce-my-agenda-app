@@ -41,43 +41,32 @@ public class Agenda {
 		Instances.TITLE, // 1
 		Instances.EVENT_LOCATION, // 2
 		Instances.ALL_DAY, // 3
-		Instances.HAS_ALARM, // 4
-		Instances.CALENDAR_COLOR, // 5
-		Instances.RRULE, // 6
-		Instances.BEGIN, // 7
-		Instances.END, // 8
-		Instances.EVENT_ID, // 9
-		Instances.START_DAY, // 10 Julian start day
-		Instances.END_DAY, // 11 Julian end day
-		Instances.SELF_ATTENDEE_STATUS, // 12
-		Instances.ORGANIZER, // 13
-		Instances.OWNER_ACCOUNT, // 14
-		Instances.CAN_ORGANIZER_RESPOND, // 15
-		Instances.EVENT_TIMEZONE, // 16
-		Events.CALENDAR_ID,
-		Calendars.VISIBLE,
+		Instances.BEGIN, // 4
+		Instances.END, // 5
+		Instances.EVENT_ID, // 6
+		Instances.START_DAY, // 7 Julian start day
+		Instances.START_MINUTE, // 8 Julian start day
+		Instances.END_DAY, // 9 Julian end day
+		Instances.END_MINUTE, // 10 Julian end day
+		Instances.SELF_ATTENDEE_STATUS, // 11
+		Instances.EVENT_TIMEZONE, // 12
+		Events.CALENDAR_ID, // 13
+		Calendars.VISIBLE, // 14
 	};
 
 	public static final int INDEX_INSTANCE_ID = 0;
 	public static final int INDEX_TITLE = 1;
 	public static final int INDEX_EVENT_LOCATION = 2;
 	public static final int INDEX_ALL_DAY = 3;
-	public static final int INDEX_HAS_ALARM = 4;
-	public static final int INDEX_COLOR = 5;
-	public static final int INDEX_RRULE = 6;
-	public static final int INDEX_BEGIN = 7;
-	public static final int INDEX_END = 8;
-	public static final int INDEX_EVENT_ID = 9;
-	public static final int INDEX_START_DAY = 10;
-	public static final int INDEX_END_DAY = 11;
-	public static final int INDEX_SELF_ATTENDEE_STATUS = 12;
-	public static final int INDEX_ORGANIZER = 13;
-	public static final int INDEX_OWNER_ACCOUNT = 14;
-	public static final int INDEX_CAN_ORGANIZER_RESPOND= 15;
-	public static final int INDEX_TIME_ZONE = 16;
-	public static final int CALENDAR_IN_INDEX = 17;
-	public static final int CALENDAR_VISIBLE_INDEX = 18;
-	
+	public static final int INDEX_BEGIN = 4;
+	public static final int INDEX_END = 5;
+	public static final int INDEX_EVENT_ID = 6;
+	public static final int INDEX_START_DAY = 7;
+	public static final int INDEX_START_MINUTE = 8;
+	public static final int INDEX_END_DAY = 9;
+	public static final int INDEX_END_MINUTE = 10;
+	public static final int INDEX_SELF_ATTENDEE_STATUS = 11;
+	public static final int INDEX_TIME_ZONE = 12;
 	
 	private Uri buildQueryUri(long start, long end) {
 		Uri.Builder builder = Instances.CONTENT_URI.buildUpon();
@@ -88,35 +77,33 @@ public class Agenda {
 	}
 
 	public Cursor events() {
-		Calendar cal = new GregorianCalendar(TimeZone.getDefault());
-    	cal.set(Calendar.HOUR_OF_DAY, 0);
-    	cal.set(Calendar.MINUTE, 0);
-    	cal.set(Calendar.SECOND, 0);
-    	cal.set(Calendar.MILLISECOND, 0);
-    	long begin = cal.getTime().getTime();
-    	
-    	cal = new GregorianCalendar(TimeZone.getDefault());
-    	cal.set(Calendar.HOUR_OF_DAY, 24);
-    	cal.set(Calendar.MINUTE, 59);
-    	cal.set(Calendar.SECOND, 59);
-    	cal.set(Calendar.MILLISECOND, 59);
-    	long end = cal.getTime().getTime();
-
     	String[] calendarIds = new String[]{"5","7"}; 
-    	    	
-    	String blah = buildSelection(calendarIds.length);
-    	Log.i(MainActivity.TAG, blah);
-    	
 		return mContentResolver.query(
-				buildQueryUri(begin,end), 
+				buildQueryUri(buildStartTime(), buildEndTime()), 
 				PROJECTION, 
 				buildSelection(calendarIds.length), 
 				calendarIds, 
 				AGENDA_SORT_ORDER);
 	};
 
-
+	private long buildStartTime() {
+		Calendar cal = new GregorianCalendar(TimeZone.getDefault());
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime().getTime();
+	}
 	
+	private long buildEndTime() {
+    	Calendar cal = new GregorianCalendar(TimeZone.getDefault());
+    	cal.set(Calendar.HOUR_OF_DAY, 24);
+    	cal.set(Calendar.MINUTE, 59);
+    	cal.set(Calendar.SECOND, 59);
+    	cal.set(Calendar.MILLISECOND, 59);
+    	return cal.getTime().getTime();
+		
+	}
 	private String buildSelection(int numberOfCalendars) {
 		/* showing only visible calendars, and events that arent decline */
     	String selection = Calendars.VISIBLE + " = 1 AND ";
