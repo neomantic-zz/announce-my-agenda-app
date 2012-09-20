@@ -1,9 +1,6 @@
 package com.neomantic.calendar_out_loud;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -16,7 +13,6 @@ import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Instances;
-import android.text.format.Time;
 import android.util.Log;
 
 
@@ -29,8 +25,6 @@ public class Agenda {
 
 	
 	private ContentResolver mContentResolver;
-
-	private boolean mHideDeclined = true;
 	
 	public Agenda(ContentResolver contentResolver) {
 		mContentResolver = contentResolver;
