@@ -20,4 +20,7 @@
 
     <string name="agenda_line_one_meeting">Looks like a good day today.  You only have one meeting.  It is scheduled from %1$s to %2$s. The meeting is titled, %3$s, and it is located at %4$s.</string>
     <string name="agenda_line_one_meeting_no_location">Looks like a good day today.  You only have one meeting.  It is scheduled from %1$s to %2$s. The meeting is titled, %3$s.</string>
+    <string name="greeting_good_morning">Good Morning.</string>
+    <string name="greeting_afternoon">Good Afternoon.</string>
+    <string name="greeting_evening">Good Evening</string>
 </resources>

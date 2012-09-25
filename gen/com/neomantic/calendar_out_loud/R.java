@@ -43,6 +43,9 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int first_agenda_line_item=0x7f050004;
         public static final int first_agenda_line_item_no_location=0x7f050005;
+        public static final int greeting_afternoon=0x7f050010;
+        public static final int greeting_evening=0x7f050011;
+        public static final int greeting_good_morning=0x7f05000f;
         public static final int menu_settings=0x7f050001;
         public static final int morning_greeting=0x7f050003;
         public static final int title_activity_main=0x7f050002;
