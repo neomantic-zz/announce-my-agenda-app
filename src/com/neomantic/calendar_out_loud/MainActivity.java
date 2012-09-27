@@ -39,7 +39,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 
 	static final String TAG = "CalendarOutLoud"; 
 
-	private Script script;
+	private Script mScript;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,15 +62,16 @@ public class MainActivity extends ListActivity implements OnInitListener {
         
         Cursor ev = a.events();
         Resources res = getResources();
-        script = new Script();
+        mScript = new Script();
         while(ev.moveToNext()) {
-        	script.add(new AgendaLine(ev));
+        	mScript.add(new AgendaLine(ev));
         }
 
-        Log.i(TAG, script.write(res));
+        Log.i(TAG, mScript.write(res));
 
         mTTS = new TextToSpeech(this, this);
-
+        
+        
     }
 
     @Override
@@ -96,7 +97,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
     
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		speakWords(script.write(getResources()));
+		speakWords(mScript.write(getResources()));
 		speakWords(((TextView) v.findViewById(android.R.id.text1)).getText().toString());
 		super.onListItemClick(l, v, position, id);
 	}
