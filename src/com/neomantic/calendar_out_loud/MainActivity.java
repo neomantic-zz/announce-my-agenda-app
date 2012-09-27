@@ -1,5 +1,6 @@
 package com.neomantic.calendar_out_loud;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 import android.os.Bundle;
@@ -11,12 +12,15 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
 
 public class MainActivity extends ListActivity implements OnInitListener {
 
@@ -40,12 +44,32 @@ public class MainActivity extends ListActivity implements OnInitListener {
 	static final String TAG = "CalendarOutLoud"; 
 
 	private Script mScript;
+
+	private boolean mRebuildAgendaScript = true;
+
+	private Button mSpeakButton;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ContentResolver cr = getContentResolver();
+        
+        mSpeakButton = (Button)findViewById(R.id.speak_button);
+        mSpeakButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final Button button = (Button) v; 
+				if (mTTS.isSpeaking()) {
+					mTTS.stop();
+					MainActivity.this.setSpeechButtonEnabled();
+				} else {
+					MainActivity.this.speakAgenda();
+					mSpeakButton.setText(R.string.stop_speaking_agenda);
+				}
+			}
+        });
+        
+        final ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(Calendars.CONTENT_URI, CALENDAR_PROJECTION, null, null, Calendars.ACCOUNT_NAME);
         SimpleCursorAdapter ca = new SimpleCursorAdapter(
         		this,
@@ -58,23 +82,12 @@ public class MainActivity extends ListActivity implements OnInitListener {
         view.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         view.setItemsCanFocus(false);
         this.setListAdapter(ca);
-        Agenda a = new Agenda(this.getContentResolver());
         
-        Cursor ev = a.events();
-        Resources res = getResources();
-        mScript = new Script();
-        while(ev.moveToNext()) {
-        	mScript.add(new AgendaLine(ev));
-        }
-
-        Log.i(TAG, mScript.write(res));
-
         mTTS = new TextToSpeech(this, this);
-        
         
     }
 
-    @Override
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
@@ -87,19 +100,50 @@ public class MainActivity extends ListActivity implements OnInitListener {
         		mTTS.setLanguage(Locale.US);
         } else {
             Log.e("TTS", "Initilization Failed!");
-        }		
+        }
+        mTTS.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
+			@Override
+			public void onUtteranceCompleted(String utteranceId) {
+				//this helped
+				//http://stackoverflow.com/questions/4652969/android-tts-onutterancecompleted-callback-isnt-getting-called
+				runOnUiThread(new Runnable() {
+	                @Override
+	                public void run() {
+	                	MainActivity.this.setSpeechButtonEnabled();
+	                }
+	            });
+
+			}
+        });
 	}
 	
-    //speak the user text
-    private void speakWords(String speech) {
-         mTTS.speak(speech, TextToSpeech.QUEUE_ADD, null);
-    }
-    
+	protected void speakAgenda() {
+		if (mRebuildAgendaScript) {
+			buildAgendaScript();
+			mRebuildAgendaScript = false;
+		}
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "stupidAndroidNeedsStringToHitOnUtteranceCompletedListner");
+		mTTS.speak(mScript.write(getResources()), TextToSpeech.QUEUE_FLUSH, params);
+	}
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		speakWords(mScript.write(getResources()));
-		speakWords(((TextView) v.findViewById(android.R.id.text1)).getText().toString());
+		mRebuildAgendaScript  = true;
 		super.onListItemClick(l, v, position, id);
+	}
+	
+	private void buildAgendaScript() {
+        final Agenda a = new Agenda(this.getContentResolver());
+        final Cursor events = a.events();
+        mScript = new Script();
+        while(events.moveToNext()) {
+        	mScript.add(new AgendaLine(events));
+        }
+	}
+	
+    protected void setSpeechButtonEnabled() {
+		mSpeakButton.setText(R.string.start_speaking_agenda);
 	}
 
 }

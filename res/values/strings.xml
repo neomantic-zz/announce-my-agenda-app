@@ -23,4 +23,6 @@
     <string name="greeting_good_morning">Good Morning.</string>
     <string name="greeting_afternoon">Good Afternoon.</string>
     <string name="greeting_evening">Good Evening</string>
+    <string name="start_speaking_agenda">Say My Agenda</string>
+    <string name="stop_speaking_agenda">Stop speaking</string>
 </resources>
