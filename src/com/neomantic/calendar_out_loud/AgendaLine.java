@@ -117,7 +117,8 @@ public class AgendaLine {
 	
 	private boolean hasLocation() {
 		/* NOTE - will be adding more logic here to find phone numbers etc */
-		return !mEventLocation.isEmpty();
+		//return !mEventLocation.isEmpty();
+		return false;
 	}
 
 	public String format(Resources res) {
