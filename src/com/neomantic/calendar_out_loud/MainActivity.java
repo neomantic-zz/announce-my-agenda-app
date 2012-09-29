@@ -56,7 +56,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
         
         mSpeakButton = (Button)findViewById(R.id.speak_button);
         mSpeakButton.setOnClickListener(new OnClickListener() {
-			@Override
+			
 			public void onClick(View v) {
 				final Button button = (Button) v; 
 				if (mTTS.isSpeaking()) {
@@ -93,7 +93,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
         return true;
     }
 
-	@Override
+	
 	public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
         	if ( mTTS.isLanguageAvailable(Locale.US) == TextToSpeech.LANG_AVAILABLE)
@@ -101,20 +101,21 @@ public class MainActivity extends ListActivity implements OnInitListener {
         } else {
             Log.e("TTS", "Initilization Failed!");
         }
-        mTTS.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
-			@Override
+    
+        /*mTTS.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
+			
 			public void onUtteranceCompleted(String utteranceId) {
 				//this helped
 				//http://stackoverflow.com/questions/4652969/android-tts-onutterancecompleted-callback-isnt-getting-called
 				runOnUiThread(new Runnable() {
-	                @Override
+	        
 	                public void run() {
 	                	MainActivity.this.setSpeechButtonEnabled();
 	                }
 	            });
 
 			}
-        });
+        })*/;
 	}
 	
 	protected void speakAgenda() {
