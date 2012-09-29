@@ -71,7 +71,7 @@ public class Agenda {
 	}
 
 	public Cursor events() {
-    	String[] calendarIds = new String[]{"5","7"}; 
+		String[] calendarIds = new String[]{"5","7"}; 
 		return mContentResolver.query(
 				buildQueryUri(buildStartTime(), buildEndTime()), 
 				PROJECTION, 
@@ -90,20 +90,20 @@ public class Agenda {
 	}
 	
 	private long buildEndTime() {
-    	Calendar cal = new GregorianCalendar(TimeZone.getDefault());
-    	cal.set(Calendar.HOUR_OF_DAY, 24);
-    	cal.set(Calendar.MINUTE, 59);
-    	cal.set(Calendar.SECOND, 59);
-    	cal.set(Calendar.MILLISECOND, 59);
-    	return cal.getTime().getTime();
+		Calendar cal = new GregorianCalendar(TimeZone.getDefault());
+		cal.set(Calendar.HOUR_OF_DAY, 24);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 59);
+		return cal.getTime().getTime();
 		
 	}
 	private String buildSelection(int numberOfCalendars) {
 		/* showing only visible calendars, and events that arent decline */
-    	String selection = Calendars.VISIBLE + " = 1 AND ";
-    	selection += Instances.SELF_ATTENDEE_STATUS + " != " + Attendees.ATTENDEE_STATUS_DECLINED + " AND "; 
-    	selection += Events.CALENDAR_ID + " IN(" + buildPlaceHolders(numberOfCalendars)+ ")";
-    	return selection;
+		String selection = Calendars.VISIBLE + " = 1 AND ";
+		selection += Instances.SELF_ATTENDEE_STATUS + " != " + Attendees.ATTENDEE_STATUS_DECLINED + " AND "; 
+		selection += Events.CALENDAR_ID + " IN(" + buildPlaceHolders(numberOfCalendars)+ ")";
+		return selection;
 	}
 	
 	private String buildPlaceHolders(int numberOfPlaceHolders) {
@@ -119,3 +119,4 @@ public class Agenda {
 	}
 
 }
+
