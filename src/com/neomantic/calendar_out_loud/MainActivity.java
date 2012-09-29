@@ -17,10 +17,9 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
+import android.speech.tts.UtteranceProgressListener;
 
 public class MainActivity extends ListActivity implements OnInitListener {
 
@@ -95,27 +94,31 @@ public class MainActivity extends ListActivity implements OnInitListener {
 
 	
 	public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-        	if ( mTTS.isLanguageAvailable(Locale.US) == TextToSpeech.LANG_AVAILABLE)
-        		mTTS.setLanguage(Locale.US);
-        } else {
-            Log.e("TTS", "Initilization Failed!");
-        }
-    
-        /*mTTS.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
-			
-			public void onUtteranceCompleted(String utteranceId) {
-				//this helped
-				//http://stackoverflow.com/questions/4652969/android-tts-onutterancecompleted-callback-isnt-getting-called
-				runOnUiThread(new Runnable() {
-	        
-	                public void run() {
-	                	MainActivity.this.setSpeechButtonEnabled();
-	                }
-	            });
+		if( status == TextToSpeech.SUCCESS) {
+			mTTS.setOnUtteranceProgressListener( new UtteranceProgressListener() {
+				@Override
+				public void onDone(String arg0) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							MainActivity.this.setSpeechButtonEnabled();    
+				            }
+				        });
+					}
 
-			}
-        })*/;
+					@Override
+					public void onError(String arg0) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void onStart(String arg0) {
+						// TODO Auto-generated method stub
+					}
+				});
+            } else {
+            	Log.e("TTS", "Initilization Failed!");
+            }
+
 	}
 	
 	protected void speakAgenda() {
@@ -146,5 +149,4 @@ public class MainActivity extends ListActivity implements OnInitListener {
     protected void setSpeechButtonEnabled() {
 		mSpeakButton.setText(R.string.start_speaking_agenda);
 	}
-
 }
