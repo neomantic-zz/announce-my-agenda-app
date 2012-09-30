@@ -1,19 +1,24 @@
 package com.neomantic.calendar_out_loud;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.CalendarContract.Calendars;
 import android.app.ListActivity;
 import android.content.ContentResolver;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -32,7 +37,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		Calendars.OWNER_ACCOUNT // 4
 	};	
 	
-	private static final int ID_INDEX_CALENDAR_PROJECTION = 0;
+	public static final int ID_INDEX_CALENDAR_PROJECTION = 0;
 	private static final int ACCOUNT_NAME_INDEX_CALENDAR_PROJECTION = 1;
 	private static final int ACCOUNT_TYPE_INDEX_CALENDAR_PROJECTION = 2;
 	private static final int CALENDAR_DISPLAY_NAME_INDEX_CALENDAR_PROJECTION = 3;
@@ -40,14 +45,15 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		
 	private TextToSpeech mTTS;
 
-	static final String TAG = "CalendarOutLoud"; 
+	static final String TAG = "CalendarOutLoud";
 
+	private static final String PREF_KEY_CALENDAR_LIST = "CALENDAR_LIST"; 
 	private Script mScript;
-
 	private boolean mRebuildAgendaScript = true;
-
 	private Button mSpeakButton;
-	
+	private Editor mEditor;
+	private Set<String> mPreferencesSet = new HashSet<String>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +63,6 @@ public class MainActivity extends ListActivity implements OnInitListener {
         mSpeakButton.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				final Button button = (Button) v; 
 				if (mTTS.isSpeaking()) {
 					mTTS.stop();
 					MainActivity.this.setSpeechButtonEnabled();
@@ -70,6 +75,8 @@ public class MainActivity extends ListActivity implements OnInitListener {
         
         final ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(Calendars.CONTENT_URI, CALENDAR_PROJECTION, null, null, Calendars.ACCOUNT_NAME);
+        ArrayList<String> calendars = new ArrayList<String>();
+        calendars.add("1");
         SimpleCursorAdapter ca = new SimpleCursorAdapter(
         		this,
         		android.R.layout.simple_list_item_multiple_choice,
@@ -77,13 +84,51 @@ public class MainActivity extends ListActivity implements OnInitListener {
         		new String[]{Calendars.CALENDAR_DISPLAY_NAME}, 
         		new int[]{android.R.id.text1},
         		CursorAdapter.FLAG_AUTO_REQUERY);
-        ListView view = getListView();
-        view.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = prefs.edit();
+        mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, null);
+        if (mPreferencesSet == null) {
+        	mEditor.putStringSet(PREF_KEY_CALENDAR_LIST, (Set<String>)(new HashSet<String>()));
+        	mEditor.commit();
+        	mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, null);
+        }
+
+        Log.v(TAG, "NumberOf: " + mPreferencesSet.size());
+        
+		ca.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+			
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				String calendarId = cursor.getString(ID_INDEX_CALENDAR_PROJECTION);
+				if (view.getTag(R.integer.checkview_id_key) == null ) {
+					view.setTag(R.integer.checkview_id_key, calendarId);	
+				}
+				final CheckedTextView checkedTextView = (CheckedTextView) view;
+				if(mPreferencesSet.contains(calendarId)) {
+					checkedTextView.setChecked(true);
+				}
+				checkedTextView.setOnClickListener( new View.OnClickListener() {
+					public void onClick(View v) {
+						final CheckedTextView itemView = (CheckedTextView)v;
+						mRebuildAgendaScript = true;
+						if (itemView.isChecked()) {
+							mPreferencesSet.remove(itemView.getTag(R.integer.checkview_id_key));
+						} else {
+							mPreferencesSet.add((String) itemView.getTag(R.integer.checkview_id_key)); 	
+						}
+						mEditor.putStringSet(PREF_KEY_CALENDAR_LIST, mPreferencesSet);
+						mEditor.commit();
+						itemView.toggle();
+					}
+				});
+				return false;
+			}
+		});
+        
+        final ListView view = getListView();
         view.setItemsCanFocus(false);
         this.setListAdapter(ca);
-        
         mTTS = new TextToSpeech(this, this);
-        
     }
 
 	@Override
@@ -129,12 +174,6 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "stupidAndroidNeedsStringToHitOnUtteranceCompletedListner");
 		mTTS.speak(mScript.write(getResources()), TextToSpeech.QUEUE_FLUSH, params);
-	}
-	
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		mRebuildAgendaScript  = true;
-		super.onListItemClick(l, v, position, id);
 	}
 	
 	private void buildAgendaScript() {
