@@ -70,8 +70,7 @@ public class Agenda {
 		return builder.build();
 	}
 
-	public Cursor events() {
-		String[] calendarIds = new String[]{"5","7"}; 
+	public Cursor events(String[] calendarIds) {
 		return mContentResolver.query(
 				buildQueryUri(buildStartTime(), buildEndTime()), 
 				PROJECTION, 

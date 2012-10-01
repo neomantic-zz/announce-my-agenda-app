@@ -85,7 +85,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 
         final SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         mEditor = prefs.edit();
-        mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, new HashSet<String>());
+        mPreferencesSet = getCalendarIdsPrefs();
 		ca.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
 			
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -166,8 +166,10 @@ public class MainActivity extends ListActivity implements OnInitListener {
 	}
 	
 	private void buildAgendaScript() {
-        final Agenda a = new Agenda(this.getContentResolver());
-        final Cursor events = a.events();
+        final Agenda a = new Agenda(getContentResolver());
+        final Set<String> set = getCalendarIdsPrefs();
+        final Cursor events = a.events(set.toArray(new String[set.size()]));
+        
         mScript = new Script();
         while(events.moveToNext()) {
         	mScript.add(new AgendaLine(events));
@@ -177,4 +179,8 @@ public class MainActivity extends ListActivity implements OnInitListener {
     protected void setSpeechButtonEnabled() {
 		mSpeakButton.setText(R.string.start_speaking_agenda);
 	}
+    
+    private Set<String> getCalendarIdsPrefs() {
+    	return getPreferences(MODE_PRIVATE).getStringSet(PREF_KEY_CALENDAR_LIST, new HashSet<String>());
+    }
 }
