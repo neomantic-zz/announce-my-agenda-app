@@ -3,6 +3,8 @@ package com.neomantic.calendar_out_loud;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import android.media.AudioManager;
@@ -76,6 +78,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
         
         final ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(Calendars.CONTENT_URI, CALENDAR_PROJECTION, null, null, Calendars.ACCOUNT_NAME);
+        purgeOldCalendarsFromPrefs(cursor);
         SimpleCursorAdapter ca = new SimpleCursorAdapter(
         		this,
         		android.R.layout.simple_list_item_multiple_choice,
@@ -90,7 +93,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		ca.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
 			
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				String calendarId = cursor.getString(ID_INDEX_CALENDAR_PROJECTION);
+				final String calendarId = cursor.getString(ID_INDEX_CALENDAR_PROJECTION);
 				if (view.getTag(R.integer.checkview_id_key) == null ) {
 					view.setTag(R.integer.checkview_id_key, calendarId);	
 				}
@@ -205,4 +208,44 @@ public class MainActivity extends ListActivity implements OnInitListener {
     private Set<String> getCalendarIdsPrefs() {
     	return getPreferences(MODE_PRIVATE).getStringSet(PREF_KEY_CALENDAR_LIST, new HashSet<String>());
     }
+    
+    /* Removes those Calendar Ids that corresponds to calendars that no longer exist
+     * 
+     */
+    private void purgeOldCalendarsFromPrefs(Cursor cursor) {
+    	final List <String> currentCalendarIds = new ArrayList<String>();
+    	//built a list of the current Calendar Ids based no the server
+    	while(cursor.moveToNext()) {
+    		currentCalendarIds.add(cursor.getString(ID_INDEX_CALENDAR_PROJECTION));
+    	}
+    	cursor.moveToFirst();//reset to the original position, seems to work without this, but...
+    	
+    	final Set<String> prefsCalendarIds = getCalendarIdsPrefs();
+    	final Iterator<String> prefs = prefsCalendarIds.iterator();
+    	final int size = currentCalendarIds.size();
+    	Set <String> prefsToRemove = null;
+    	while(prefs.hasNext()) {
+			String prefId = prefs.next();
+    		for(int i = 0; i < size; i++) {
+    			String currentId = currentCalendarIds.get(i);
+    			if (prefId.equals(currentId)) {
+    				break;
+    			} else if (i == size - 1) {
+    				//we never found it
+    				if (prefsToRemove == null) {
+    					prefsToRemove = new HashSet<String>();
+    				}	
+    				prefsToRemove.add(prefId);
+    			}
+    		}
+    	}
+    	
+    	if (prefsToRemove != null) {
+    		//remove those calendar ids from preferencesx
+    		prefsCalendarIds.removeAll(prefsToRemove);
+    		final Editor e = getPreferences(MODE_PRIVATE).edit();
+    		e.putStringSet(PREF_KEY_CALENDAR_LIST, prefsCalendarIds);
+    		e.commit();
+    	}
+	}
 }
