@@ -117,9 +117,8 @@ public class MainActivity extends ListActivity implements OnInitListener {
 			}
 		});
         
-        final ListView view = getListView();
-        view.setItemsCanFocus(false);
-        this.setListAdapter(ca);
+        getListView().setItemsCanFocus(false);
+        setListAdapter(ca);
         mTTS = new TextToSpeech(this, this);
     }
 
