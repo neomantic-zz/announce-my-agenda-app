@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.CalendarContract.Calendars;
 import android.app.ListActivity;
 import android.content.ContentResolver;
@@ -20,7 +19,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
