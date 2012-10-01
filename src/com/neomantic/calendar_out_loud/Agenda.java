@@ -66,8 +66,7 @@ public class Agenda {
 		Uri.Builder builder = Instances.CONTENT_URI.buildUpon();
 		ContentUris.appendId(builder, start);
 		ContentUris.appendId(builder, end);
-		Uri blah = builder.build();
-		return blah; 
+		return builder.build();
 	}
 
 	public Cursor events() {
