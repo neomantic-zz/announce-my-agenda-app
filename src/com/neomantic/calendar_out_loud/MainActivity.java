@@ -43,7 +43,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		
 	private TextToSpeech mTTS;
 
-	static final String TAG = "CalendarOutLoud";
+	static final String TAG = MainActivity.class.getName();
 
 	private static final String PREF_KEY_CALENDAR_LIST = "CALENDAR_LIST"; 
 	private Script mScript;
