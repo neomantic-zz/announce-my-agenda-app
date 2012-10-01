@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.provider.CalendarContract.Calendars;
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -135,6 +137,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 					result == TextToSpeech.LANG_NOT_SUPPORTED) {
 				Toast.makeText(this, "Languaged Not Supported", Toast.LENGTH_SHORT);
 			} else { 
+				setSpeechVolume();
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 					@Override
 					public void onDone(String arg0) {
@@ -162,6 +165,11 @@ public class MainActivity extends ListActivity implements OnInitListener {
 
 	}
 	
+	private void setSpeechVolume() {
+		final AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		am.setStreamVolume(am.STREAM_MUSIC, am.getStreamMaxVolume(am.STREAM_SYSTEM), 0);		
+	}
+
 	@Override
 	protected void onDestroy() {
 		if (mTTS != null) {
