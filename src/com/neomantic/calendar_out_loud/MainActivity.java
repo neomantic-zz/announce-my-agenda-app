@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
@@ -129,16 +130,21 @@ public class MainActivity extends ListActivity implements OnInitListener {
 	
 	public void onInit(int status) {
 		if( status == TextToSpeech.SUCCESS) {
-			mTTS.setOnUtteranceProgressListener( new UtteranceProgressListener() {
-				@Override
-				public void onDone(String arg0) {
-					runOnUiThread(new Runnable() {
-						public void run() {
-							MainActivity.this.setSpeechButtonEnabled();    
-				            }
-				        });
+			int result = mTTS.setLanguage(mTTS.getLanguage());
+			if (result == TextToSpeech.LANG_MISSING_DATA ||
+					result == TextToSpeech.LANG_NOT_SUPPORTED) {
+				Toast.makeText(this, "Languaged Not Supported", Toast.LENGTH_SHORT);
+			} else { 
+				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+					@Override
+					public void onDone(String arg0) {
+						runOnUiThread(new Runnable() {
+							public void run() {
+								MainActivity.this.setSpeechButtonEnabled();    
+							}
+						});
 					}
-
+					
 					@Override
 					public void onError(String arg0) {
 						// TODO Auto-generated method stub
@@ -149,12 +155,22 @@ public class MainActivity extends ListActivity implements OnInitListener {
 						// TODO Auto-generated method stub
 					}
 				});
-            } else {
-            	Log.e("TTS", "Initilization Failed!");
-            }
+			}
+		} else {
+		   	Log.e("TTS", "Initilization Failed!");
+		}
 
 	}
 	
+	@Override
+	protected void onDestroy() {
+		if (mTTS != null) {
+			mTTS.stop();
+			mTTS.shutdown();
+		}
+		super.onDestroy();
+	}
+
 	protected void speakAgenda() {
 		if (mRebuildAgendaScript) {
 			buildAgendaScript();
