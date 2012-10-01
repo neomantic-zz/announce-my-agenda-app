@@ -52,7 +52,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 	private boolean mRebuildAgendaScript = true;
 	private Button mSpeakButton;
 	private Editor mEditor;
-	private Set<String> mPreferencesSet = new HashSet<String>();
+	private Set<String> mPreferencesSet;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,17 +85,9 @@ public class MainActivity extends ListActivity implements OnInitListener {
         		new int[]{android.R.id.text1},
         		CursorAdapter.FLAG_AUTO_REQUERY);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         mEditor = prefs.edit();
-        mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, null);
-        if (mPreferencesSet == null) {
-        	mEditor.putStringSet(PREF_KEY_CALENDAR_LIST, (Set<String>)(new HashSet<String>()));
-        	mEditor.commit();
-        	mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, null);
-        }
-
-        Log.v(TAG, "NumberOf: " + mPreferencesSet.size());
-        
+        mPreferencesSet = prefs.getStringSet(PREF_KEY_CALENDAR_LIST, new HashSet<String>());
 		ca.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
 			
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
