@@ -76,8 +76,6 @@ public class MainActivity extends ListActivity implements OnInitListener {
         
         final ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(Calendars.CONTENT_URI, CALENDAR_PROJECTION, null, null, Calendars.ACCOUNT_NAME);
-        ArrayList<String> calendars = new ArrayList<String>();
-        calendars.add("1");
         SimpleCursorAdapter ca = new SimpleCursorAdapter(
         		this,
         		android.R.layout.simple_list_item_multiple_choice,
