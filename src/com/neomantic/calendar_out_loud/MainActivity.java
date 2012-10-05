@@ -136,7 +136,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 			int result = mTTS.setLanguage(mTTS.getLanguage());
 			if (result == TextToSpeech.LANG_MISSING_DATA ||
 					result == TextToSpeech.LANG_NOT_SUPPORTED) {
-				Toast.makeText(this, "Languaged Not Supported", Toast.LENGTH_SHORT);
+				Toast.makeText(this, "Languaged Not Supported", Toast.LENGTH_SHORT).show();
 			} else { 
 				setSpeechVolume();
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
