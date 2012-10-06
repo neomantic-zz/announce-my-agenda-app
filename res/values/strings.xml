@@ -2,6 +2,7 @@
     <string name="app_name">calendar-out-loud</string>
     <string name="menu_tts_settings">Text To Speech Settings</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_view_app_info">About this App</string>
     
     <string name="first_agenda_line_item">Your first meeting is from %1$s to %2$s. It\'s called %3$s and located at %4$s.</string>
     <string name="first_agenda_line_item_no_location">Your first meeting is from %1$s to %2$s. It\'s called %3$s.</string>
@@ -27,4 +28,6 @@
     <string name="alert_title_unsupported_language">Unsupported Language</string>
     <string name="alert_btn_unsupported_language_ok">That\'s too bad</string>
     <string name="alert_btn_unsupported_language_msg">Sorry. Only US and UK English is currently supported.</string>
+    <string name="menu_changelog">Changelog</string>
+    <string name="menu_about">About this App</string>
 </resources>

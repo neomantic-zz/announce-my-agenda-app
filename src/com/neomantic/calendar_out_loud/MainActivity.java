@@ -284,6 +284,17 @@ public class MainActivity extends ListActivity implements OnInitListener {
 			i.setAction("com.android.settings.TTS_SETTINGS");
 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(i);
+			return true;
+		case R.id.menu_item_about:
+			Intent intent = new Intent(this, ViewAppInfoActivity.class);
+			intent.putExtra(ViewAppInfoActivity.KEY_ASSET_URL, "file:///android_asset/about.html");
+			startActivity(intent);
+			return true;
+		case R.id.menu_item_changelog:
+			Intent changeLogIntent = new Intent(this, ViewAppInfoActivity.class);
+			changeLogIntent.putExtra(ViewAppInfoActivity.KEY_ASSET_URL, "file:///android_asset/changelog.html");
+			startActivity(changeLogIntent);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
