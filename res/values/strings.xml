@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">calendar-out-loud</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_tts_settings">Text To Speech Settings</string>
     <string name="title_activity_main">MainActivity</string>
     
     <string name="first_agenda_line_item">Your first meeting is from %1$s to %2$s. It\'s called %3$s and located at %4$s.</string>
