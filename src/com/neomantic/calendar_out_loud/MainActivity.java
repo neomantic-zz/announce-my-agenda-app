@@ -267,8 +267,10 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		int count = view.getAdapter().getCount();
 		for (int i = 0; i < count; i++) {
 			CheckedTextView v = (CheckedTextView)view.getChildAt(i);
-			v.setActivated(false);
-			v.setEnabled(false);
+			if (v != null) {
+				v.setActivated(false);
+				v.setEnabled(false);
+			}
 		}
 	}
 }
