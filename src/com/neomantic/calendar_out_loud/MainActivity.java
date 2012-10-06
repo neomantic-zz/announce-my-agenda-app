@@ -10,9 +10,13 @@ import java.util.Set;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.provider.CalendarContract.Calendars;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -23,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.CursorAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import android.speech.tts.TextToSpeech;
@@ -136,7 +141,8 @@ public class MainActivity extends ListActivity implements OnInitListener {
 			int result = mTTS.setLanguage(mTTS.getLanguage());
 			if (result == TextToSpeech.LANG_MISSING_DATA ||
 					result == TextToSpeech.LANG_NOT_SUPPORTED) {
-				Toast.makeText(this, "Languaged Not Supported", Toast.LENGTH_SHORT).show();
+					DialogFragment frag = UnsupportedLanguageAlertFragment.newInstance();
+					frag.show(this.getFragmentManager(), "");
 			} else { 
 				setSpeechVolume();
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -247,5 +253,22 @@ public class MainActivity extends ListActivity implements OnInitListener {
     		e.putStringSet(PREF_KEY_CALENDAR_LIST, prefsCalendarIds);
     		e.commit();
     	}
+	}
+    
+
+
+	protected void disableSpeechButton() {
+		mSpeakButton.setEnabled(false);
+	}
+
+	public void disableListView() {
+		ListView view = getListView();
+		view.setOnScrollListener(null);
+		int count = view.getAdapter().getCount();
+		for (int i = 0; i < count; i++) {
+			CheckedTextView v = (CheckedTextView)view.getChildAt(i);
+			v.setActivated(false);
+			v.setEnabled(false);
+		}
 	}
 }
