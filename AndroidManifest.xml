@@ -20,6 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ViewAppInfoActivity"
+            	  android:label="@string/title_view_app_info"></activity>
     </application>
-
 </manifest>
