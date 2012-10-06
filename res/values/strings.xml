@@ -24,4 +24,7 @@
     <string name="greeting_evening">Good Evening</string>
     <string name="start_speaking_agenda">Say My Agenda</string>
     <string name="stop_speaking_agenda">Stop speaking</string>
+    <string name="alert_title_unsupported_language">Unsupported Language</string>
+    <string name="alert_btn_unsupported_language_ok">That\'s too bad</string>
+    <string name="alert_btn_unsupported_language_msg">Sorry. Only US and UK English is currently supported.</string>
 </resources>
