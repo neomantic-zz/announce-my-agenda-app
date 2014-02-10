@@ -1,3 +1,19 @@
+/** "Announce My Agenda" Android App
+    Copyright (C) 2014 Chad Albers
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
 package com.neomantic.calendar_out_loud;
 
 import java.util.Calendar;
@@ -9,50 +25,50 @@ import android.content.res.Resources;
 import android.database.Cursor;
 
 public class AgendaLine {
-	
+
 	private String mEventLocation = "";
 	private String mEventTitle = "";
 	private String mBeginTime = "";
 	private String mEndTime = "";
-	
+
 	public static final int FIRST_MEETING = R.string.first_agenda_line_item;
 	public static final int FIRST_MEETING_NO_LOCATION = R.string.first_agenda_line_item_no_location;
-		
+
 	public static final int MEETING = R.string.agenda_line_item;
 	public static final int MEETING_NO_LOCATION = R.string.agenda_line_item_no_location;
 
 	public static final int ONLY_ONE_MEETING = R.string.agenda_line_one_meeting;
 	public static final int ONLY_ONE_MEETING_NO_LOCATION = R.string.agenda_line_one_meeting_no_location;
-	
+
 	public static final int NEXT_MEETING = R.string.agenda_line_item_next_meeting;
 	public static final int NEXT_MEETING_NO_LOCATION = R.string.agenda_line_item_next_meeting_no_location;
-	
+
 	public static final int LAST_MEETING = R.string.agenda_line_item_final_meeting;
 	public static final int LAST_MEETING_NO_LOCATION = R.string.agenda_line_item_final_meeting_no_location;
 
 	private int[] DEFAULTS = new int[] {NEXT_MEETING, MEETING};
 	private int mFormatResourceId;
-	
+
 	public AgendaLine(Cursor cursor) {
-		
+
 		mEventTitle = cursor.getString(Agenda.INDEX_TITLE);
 		mEventLocation = cursor.getString(Agenda.INDEX_EVENT_LOCATION);
-		
+
 		GregorianCalendar cal = new GregorianCalendar(TimeZone.getDefault());
 		cal.setTimeInMillis(cursor.getLong(Agenda.INDEX_BEGIN));
 
-		
+
 		mBeginTime = Integer.toString(cal.get(Calendar.HOUR)) + " ";
 		mBeginTime += parseMinute(cal);
 		mBeginTime += parseAMPM(cal);
 
 		cal = new GregorianCalendar(TimeZone.getDefault());
 		cal.setTimeInMillis(cursor.getLong(Agenda.INDEX_END));
-		
+
 		mEndTime = Integer.toString(cal.get(Calendar.HOUR)) + " ";
 		mEndTime += parseMinute(cal);
 		mEndTime += parseAMPM(cal);
-		
+
 		Random r = new Random();
 		mFormatResourceId = DEFAULTS[r.nextInt(1)];
 	}
@@ -66,13 +82,13 @@ public class AgendaLine {
 		}
 		return min;
 	}
-	
+
 	private String parseAMPM(GregorianCalendar cal) {
 		if (cal.get(Calendar.AM_PM) == Calendar.AM ) {
 			return "A M";
-		} else {	
-			return "P M";    	    			
-		}		
+		} else {
+			return "P M";
+		}
 	}
 
 	public String getEventLocation() {
@@ -98,7 +114,7 @@ public class AgendaLine {
 			mFormatResourceId = FIRST_MEETING_NO_LOCATION;
 		}
 	}
-	
+
 	public void setLast() {
 		if (hasLocation()) {
 			mFormatResourceId = LAST_MEETING;
@@ -114,7 +130,7 @@ public class AgendaLine {
 			mFormatResourceId= ONLY_ONE_MEETING_NO_LOCATION;
 		}
 	}
-	
+
 	private boolean hasLocation() {
 		/* NOTE - will be adding more logic here to find phone numbers etc */
 		//return !mEventLocation.isEmpty();

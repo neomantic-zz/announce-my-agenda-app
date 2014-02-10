@@ -1,3 +1,19 @@
+/** "Announce My Agenda" Android App
+    Copyright (C) 2014 Chad Albers
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
 package com.neomantic.calendar_out_loud;
 
 import java.util.ArrayList;
@@ -40,24 +56,24 @@ public class MainActivity extends ListActivity implements OnInitListener {
 
 
 	private static final String[] CALENDAR_PROJECTION= new String[] {
-		Calendars._ID, // 0 
-		Calendars.ACCOUNT_NAME, //1 
+		Calendars._ID, // 0
+		Calendars.ACCOUNT_NAME, //1
 		Calendars.ACCOUNT_TYPE, //2
 		Calendars.CALENDAR_DISPLAY_NAME, //3
 		Calendars.OWNER_ACCOUNT // 4
-	};	
-	
+	};
+
 	public static final int ID_INDEX_CALENDAR_PROJECTION = 0;
 	private static final int ACCOUNT_NAME_INDEX_CALENDAR_PROJECTION = 1;
 	private static final int ACCOUNT_TYPE_INDEX_CALENDAR_PROJECTION = 2;
 	private static final int CALENDAR_DISPLAY_NAME_INDEX_CALENDAR_PROJECTION = 3;
 	private static final int OWNER_ACCOUNT_INDEX_CALENDAR_PROJECTION = 4;
-		
+
 	private TextToSpeech mTTS;
 
 	static final String TAG = MainActivity.class.getName();
 
-	private static final String PREF_KEY_CALENDAR_LIST = "CALENDAR_LIST"; 
+	private static final String PREF_KEY_CALENDAR_LIST = "CALENDAR_LIST";
 	private Script mScript;
 	private boolean mRebuildAgendaScript = true;
 	private Button mSpeakButton;
@@ -68,10 +84,10 @@ public class MainActivity extends ListActivity implements OnInitListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         mSpeakButton = (Button)findViewById(R.id.speak_button);
         mSpeakButton.setOnClickListener(new OnClickListener() {
-			
+
 			public void onClick(View v) {
 				if (mTTS.isSpeaking()) {
 					mTTS.stop();
@@ -82,15 +98,15 @@ public class MainActivity extends ListActivity implements OnInitListener {
 				}
 			}
         });
-        
+
         final ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(Calendars.CONTENT_URI, CALENDAR_PROJECTION, null, null, Calendars.ACCOUNT_NAME);
         purgeOldCalendarsFromPrefs(cursor);
         SimpleCursorAdapter ca = new SimpleCursorAdapter(
         		this,
         		android.R.layout.simple_list_item_multiple_choice,
-        		cursor, 
-        		new String[]{Calendars.CALENDAR_DISPLAY_NAME}, 
+        		cursor,
+        		new String[]{Calendars.CALENDAR_DISPLAY_NAME},
         		new int[]{android.R.id.text1},
         		CursorAdapter.FLAG_AUTO_REQUERY);
 
@@ -98,11 +114,11 @@ public class MainActivity extends ListActivity implements OnInitListener {
         mEditor = prefs.edit();
         mPreferencesSet = getCalendarIdsPrefs();
 		ca.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-			
+
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 				final String calendarId = cursor.getString(ID_INDEX_CALENDAR_PROJECTION);
 				if (view.getTag(R.integer.checkview_id_key) == null ) {
-					view.setTag(R.integer.checkview_id_key, calendarId);	
+					view.setTag(R.integer.checkview_id_key, calendarId);
 				}
 				final CheckedTextView checkedTextView = (CheckedTextView) view;
 				if(mPreferencesSet.contains(calendarId)) {
@@ -115,7 +131,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 						if (itemView.isChecked()) {
 							mPreferencesSet.remove(itemView.getTag(R.integer.checkview_id_key));
 						} else {
-							mPreferencesSet.add((String) itemView.getTag(R.integer.checkview_id_key)); 	
+							mPreferencesSet.add((String) itemView.getTag(R.integer.checkview_id_key));
 						}
 						mEditor.putStringSet(PREF_KEY_CALENDAR_LIST, mPreferencesSet);
 						mEditor.commit();
@@ -125,7 +141,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
 				return false;
 			}
 		});
-        
+
         getListView().setItemsCanFocus(false);
         setListAdapter(ca);
         mTTS = new TextToSpeech(this, this);
@@ -137,7 +153,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
         return true;
     }
 
-	
+
 	public void onInit(int status) {
 		if( status == TextToSpeech.SUCCESS) {
 			int result = mTTS.setLanguage(mTTS.getLanguage());
@@ -145,18 +161,18 @@ public class MainActivity extends ListActivity implements OnInitListener {
 					result == TextToSpeech.LANG_NOT_SUPPORTED) {
 					DialogFragment frag = UnsupportedLanguageAlertFragment.newInstance();
 					frag.show(this.getFragmentManager(), "");
-			} else { 
+			} else {
 				setSpeechVolume();
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 					@Override
 					public void onDone(String arg0) {
 						runOnUiThread(new Runnable() {
 							public void run() {
-								MainActivity.this.setSpeechButtonEnabled();    
+								MainActivity.this.setSpeechButtonEnabled();
 							}
 						});
 					}
-					
+
 					@Override
 					public void onError(String arg0) {
 						// TODO Auto-generated method stub
@@ -173,10 +189,10 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		}
 
 	}
-	
+
 	private void setSpeechVolume() {
 		final AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-		am.setStreamVolume(am.STREAM_MUSIC, am.getStreamMaxVolume(am.STREAM_SYSTEM), 0);		
+		am.setStreamVolume(am.STREAM_MUSIC, am.getStreamMaxVolume(am.STREAM_SYSTEM), 0);
 	}
 
 	@Override
@@ -197,28 +213,28 @@ public class MainActivity extends ListActivity implements OnInitListener {
 		params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "stupidAndroidNeedsStringToHitOnUtteranceCompletedListner");
 		mTTS.speak(mScript.write(getResources()), TextToSpeech.QUEUE_FLUSH, params);
 	}
-	
+
 	private void buildAgendaScript() {
         final Agenda a = new Agenda(getContentResolver());
         final Set<String> set = getCalendarIdsPrefs();
         final Cursor events = a.events(set.toArray(new String[set.size()]));
-        
+
         mScript = new Script();
         while(events.moveToNext()) {
         	mScript.add(new AgendaLine(events));
         }
 	}
-	
+
     protected void setSpeechButtonEnabled() {
 		mSpeakButton.setText(R.string.start_speaking_agenda);
 	}
-    
+
     private Set<String> getCalendarIdsPrefs() {
     	return getPreferences(MODE_PRIVATE).getStringSet(PREF_KEY_CALENDAR_LIST, new HashSet<String>());
     }
-    
+
     /* Removes those Calendar Ids that corresponds to calendars that no longer exist
-     * 
+     *
      */
     private void purgeOldCalendarsFromPrefs(Cursor cursor) {
     	final List <String> currentCalendarIds = new ArrayList<String>();
@@ -227,7 +243,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
     		currentCalendarIds.add(cursor.getString(ID_INDEX_CALENDAR_PROJECTION));
     	}
     	cursor.moveToFirst();//reset to the original position, seems to work without this, but...
-    	
+
     	final Set<String> prefsCalendarIds = getCalendarIdsPrefs();
     	final Iterator<String> prefs = prefsCalendarIds.iterator();
     	final int size = currentCalendarIds.size();
@@ -242,12 +258,12 @@ public class MainActivity extends ListActivity implements OnInitListener {
     				//we never found it
     				if (prefsToRemove == null) {
     					prefsToRemove = new HashSet<String>();
-    				}	
+    				}
     				prefsToRemove.add(prefId);
     			}
     		}
     	}
-    	
+
     	if (prefsToRemove != null) {
     		//remove those calendar ids from preferencesx
     		prefsCalendarIds.removeAll(prefsToRemove);
@@ -256,7 +272,7 @@ public class MainActivity extends ListActivity implements OnInitListener {
     		e.commit();
     	}
 	}
-    
+
 
 
 	protected void disableSpeechButton() {

@@ -1,3 +1,20 @@
+/** "Announce My Agenda" Android App
+    Copyright (C) 2014 Chad Albers
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
+
 package com.neomantic.calendar_out_loud;
 
 import java.util.Calendar;
@@ -18,19 +35,19 @@ import android.util.Log;
 
 
 public class Agenda {
-	
+
 	private static final String AGENDA_SORT_ORDER =
 		CalendarContract.Instances.START_DAY + " ASC, " +
 		CalendarContract.Instances.BEGIN + " ASC, " +
 		CalendarContract.Events.TITLE + " ASC";
 
-	
+
 	private ContentResolver mContentResolver;
-	
+
 	public Agenda(ContentResolver contentResolver) {
 		mContentResolver = contentResolver;
 	}
-	
+
 	private static final String[] PROJECTION = new String[] {
 		Instances._ID, // 0
 		Instances.TITLE, // 1
@@ -62,7 +79,7 @@ public class Agenda {
 	public static final int INDEX_END_MINUTE = 10;
 	public static final int INDEX_SELF_ATTENDEE_STATUS = 11;
 	public static final int INDEX_TIME_ZONE = 12;
-	
+
 	private Uri buildQueryUri(long start, long end) {
 		Uri.Builder builder = Instances.CONTENT_URI.buildUpon();
 		ContentUris.appendId(builder, start);
@@ -72,10 +89,10 @@ public class Agenda {
 
 	public Cursor events(String[] calendarIds) {
 		return mContentResolver.query(
-				buildQueryUri(buildStartTime(), buildEndTime()), 
-				PROJECTION, 
-				buildSelection(calendarIds.length), 
-				calendarIds, 
+				buildQueryUri(buildStartTime(), buildEndTime()),
+				PROJECTION,
+				buildSelection(calendarIds.length),
+				calendarIds,
 				AGENDA_SORT_ORDER);
 	};
 
@@ -87,7 +104,7 @@ public class Agenda {
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime().getTime();
 	}
-	
+
 	private long buildEndTime() {
 		Calendar cal = new GregorianCalendar(TimeZone.getDefault());
 		cal.set(Calendar.HOUR_OF_DAY, 24);
@@ -95,22 +112,22 @@ public class Agenda {
 		cal.set(Calendar.SECOND, 59);
 		cal.set(Calendar.MILLISECOND, 59);
 		return cal.getTime().getTime();
-		
+
 	}
 	private String buildSelection(int numberOfCalendars) {
 		/* showing only visible calendars, and events that arent decline */
 		String selection = Calendars.VISIBLE + " = 1 AND ";
-		selection += Instances.SELF_ATTENDEE_STATUS + " != " + Attendees.ATTENDEE_STATUS_DECLINED + " AND "; 
+		selection += Instances.SELF_ATTENDEE_STATUS + " != " + Attendees.ATTENDEE_STATUS_DECLINED + " AND ";
 		selection += Events.CALENDAR_ID + " IN(" + buildPlaceHolders(numberOfCalendars)+ ")";
 		return selection;
 	}
-	
+
 	private String buildPlaceHolders(int numberOfPlaceHolders) {
 		String placeHolders = "";
 		String placeHolder = "?,";
 		for(int i=0; i < numberOfPlaceHolders; i++) {
 			if (i == (numberOfPlaceHolders - 1) ) {
-				placeHolder = "?"; 
+				placeHolder = "?";
 			}
 			placeHolders += placeHolder;
 		}
@@ -118,4 +135,3 @@ public class Agenda {
 	}
 
 }
-

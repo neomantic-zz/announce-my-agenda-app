@@ -1,6 +1,5 @@
-/*
-    <one line to give the program's name and a brief idea of what it does.>
-    Copyright (C) <2012>  <Chad Albers>
+/** "Announce My Agenda" Android App
+    Copyright (C) 2014 Chad Albers
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+**/
 
 package com.neomantic.calendar_out_loud;
 
@@ -25,9 +24,9 @@ import android.webkit.WebView;
 public class ViewAppInfoActivity extends Activity {
 
 	public static final String KEY_ASSET_URL = "Asset Url";
-	
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {		
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.info);
 		final Bundle bundle = this.getIntent().getExtras();
